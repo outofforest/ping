@@ -46,17 +46,18 @@ func main() {
 		panic(err)
 	}
 
-	if err := Close(fd0, eth0); err != nil {
+	if err := Close(fd0); err != nil {
 		panic(err)
 	}
 
-	if err := Close(fd1, eth1); err != nil {
+	if err := Close(fd1); err != nil {
 		panic(err)
 	}
 
 	fmt.Println(receive[:n])
 }
 
+// Open opens the socket.
 func Open(ifName string) (int, error) {
 	ethPAll := (uint16(syscall.ETH_P_ALL) << 8) | (uint16(syscall.ETH_P_ALL) >> 8)
 	fd, err := syscall.Socket(syscall.AF_PACKET, syscall.SOCK_RAW, int(ethPAll))
@@ -64,16 +65,16 @@ func Open(ifName string) (int, error) {
 		return 0, errors.WithStack(err)
 	}
 
-	if_info, err := net.InterfaceByName(ifName)
+	ifInfo, err := net.InterfaceByName(ifName)
 	if err != nil {
 		return 0, errors.WithStack(err)
 	}
 
 	var haddr [8]byte
-	copy(haddr[:], if_info.HardwareAddr)
+	copy(haddr[:], ifInfo.HardwareAddr)
 	addr := syscall.SockaddrLinklayer{
 		Protocol: ethPAll,
-		Ifindex:  if_info.Index,
+		Ifindex:  ifInfo.Index,
 		Halen:    uint8(len(haddr)),
 		Addr:     haddr,
 	}
@@ -82,6 +83,7 @@ func Open(ifName string) (int, error) {
 		return 0, errors.WithStack(err)
 	}
 
+	//nolint:staticcheck
 	if err := syscall.SetLsfPromisc(ifName, false); err != nil {
 		return 0, errors.WithStack(err)
 	}
@@ -89,6 +91,7 @@ func Open(ifName string) (int, error) {
 	return fd, nil
 }
 
+// Write writes to the socket.
 func Write(fd int, packet []byte) (int, error) {
 	n, err := syscall.Write(fd, packet)
 	if err != nil {
@@ -97,6 +100,7 @@ func Write(fd int, packet []byte) (int, error) {
 	return n, nil
 }
 
+// Read reads from the socket.
 func Read(fd int, packet []byte) (int, error) {
 	n, err := syscall.Read(fd, packet)
 	if err != nil {
@@ -105,6 +109,7 @@ func Read(fd int, packet []byte) (int, error) {
 	return n, nil
 }
 
-func Close(fd int, ifName string) error {
+// Close closes the socket.
+func Close(fd int) error {
 	return errors.WithStack(syscall.Close(fd))
 }
