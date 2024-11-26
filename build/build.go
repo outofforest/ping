@@ -10,6 +10,8 @@ import (
 	"github.com/outofforest/tools/pkg/tools/golang"
 )
 
+// sudo setcap cap_net_raw=eip bin/ping-app
+
 func buildApp(ctx context.Context, deps types.DepsFunc) error {
 	deps(golang.EnsureGo)
 
