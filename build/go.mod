@@ -4,12 +4,12 @@ go 1.22.0
 
 require (
 	github.com/outofforest/build/v2 v2.3.0
+	github.com/outofforest/libexec v0.3.9
 	github.com/outofforest/tools v1.0.7
 )
 
 require (
 	github.com/outofforest/ioc/v2 v2.5.2 // indirect
-	github.com/outofforest/libexec v0.3.9 // indirect
 	github.com/outofforest/logger v0.5.5 // indirect
 	github.com/outofforest/parallel v0.2.3 // indirect
 	github.com/outofforest/run v0.8.0 // indirect
